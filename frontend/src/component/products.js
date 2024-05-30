@@ -2,14 +2,12 @@ import React from "react";
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableFooter,
   TableHead,
   TableHeader,
   TableRow,
 } from "../components/ui/table";
-import { Button } from "../components/ui/button"; // Make sure to import your Button component
 import { Link } from "react-router-dom";
 
 const invoices = [

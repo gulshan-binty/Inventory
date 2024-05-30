@@ -6,7 +6,7 @@ const Sidebar = () => {
   return (
     <div className="w-64 h-screen bg-gray-300 text-white flex flex-col fixed">
       <div className="p-4 bg-gray-500">
-        <h1 className="text-2xl font-bold">Logo</h1>
+        <h1 className="text-2xl font-bold text-gray-200">Logo</h1>
       </div>
       <nav className="flex-1 px-2 py-4 space-y-4 text-stone-50">
         <NavLink

@@ -1,14 +1,5 @@
-import { Button } from "../components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "../components/ui/card";
-import { Input } from "../components/ui/input";
-import { Label } from "../components/ui/label";
+import { Card } from "../components/ui/card";
+
 import {
   Tabs,
   TabsContent,
@@ -20,17 +11,17 @@ import Product from "./products";
 
 const Tab = () => {
   return (
-    <Tabs defaultValue="account" className="">
+    <Tabs defaultValue="product" className="">
       <TabsList className="grid w-full grid-cols-2">
-        <TabsTrigger value="account">Products</TabsTrigger>
-        <TabsTrigger value="password">Items</TabsTrigger>
+        <TabsTrigger value="product">Products</TabsTrigger>
+        <TabsTrigger value="item">Items</TabsTrigger>
       </TabsList>
-      <TabsContent value="account">
+      <TabsContent value="product">
         <Card>
           <Product></Product>
         </Card>
       </TabsContent>
-      <TabsContent value="password">
+      <TabsContent value="item">
         <Card>
           <Item></Item>
         </Card>

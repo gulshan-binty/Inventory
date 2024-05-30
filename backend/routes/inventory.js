@@ -43,7 +43,7 @@ const pool = require("../db");
  *       '500':
  *         description: Internal server error
  */
-router.post("/product", authorize, async (req, res) => {
+router.post("/product", async (req, res) => {
   const { name, price } = req.body;
   try {
     const result = await pool.query(
@@ -88,7 +88,7 @@ router.post("/product", authorize, async (req, res) => {
  *         description: Internal server error
  */
 
-router.get("/product", authorize, async (req, res) => {
+router.get("/product", async (req, res) => {
   try {
     const result = await pool.query("SELECT * FROM product");
     res.json(result.rows);
@@ -135,7 +135,7 @@ router.get("/product", authorize, async (req, res) => {
  *       '500':
  *         description: Internal server error
  */
-router.get("/product/:id", authorize, async (req, res) => {
+router.get("/product/:id", async (req, res) => {
   const productId = req.params.id;
   try {
     const result = await pool.query(
@@ -153,55 +153,9 @@ router.get("/product/:id", authorize, async (req, res) => {
   }
 });
 
-// CRUD operations for items
-
-// Create a new item
-router.post("/item", authorize, async (req, res) => {
-  const { item_name, price } = req.body;
-  try {
-    const result = await pool.query(
-      "INSERT INTO item (item_name, price) VALUES ($1, $2) RETURNING *",
-      [item_name, price]
-    );
-    res.status(201).json(result.rows[0]);
-  } catch (err) {
-    console.error("Error executing query", err);
-    res.status(500).json({ error: "Internal server error" });
-  }
-});
-
-// Read all items
-router.get("/item", authorize, async (req, res) => {
-  try {
-    const result = await pool.query("SELECT * FROM item");
-    res.json(result.rows);
-  } catch (err) {
-    console.error("Error executing query", err);
-    res.status(500).json({ error: "Internal server error" });
-  }
-});
-
-// Read an item by ID
-router.get("/item/:id", authorize, async (req, res) => {
-  const itemId = req.params.id;
-  try {
-    const result = await pool.query("SELECT * FROM item WHERE item_id = $1", [
-      itemId,
-    ]);
-    if (result.rows.length === 0) {
-      res.status(404).json({ error: "Item not found" });
-    } else {
-      res.json(result.rows[0]);
-    }
-  } catch (err) {
-    console.error("Error executing query", err);
-    res.status(500).json({ error: "Internal server error" });
-  }
-});
-
 // CRUD operations for purchaseItem
 
-router.get("/purchaseItems", authorize, async (req, res) => {
+router.get("/purchaseItems", async (req, res) => {
   const purchaseItemId = req.params.id;
   try {
     const result = await pool.query("SELECT * FROM purchaseItem", [
@@ -219,7 +173,7 @@ router.get("/purchaseItems", authorize, async (req, res) => {
 });
 
 // Read a purchase item by ID
-router.get("/purchaseItems/:id", authorize, async (req, res) => {
+router.get("/purchaseItems/:id", async (req, res) => {
   const purchaseItemId = req.params.id;
   try {
     const result = await pool.query(
@@ -238,7 +192,7 @@ router.get("/purchaseItems/:id", authorize, async (req, res) => {
 });
 
 // Update a purchase item by ID
-router.put("/purchaseItems/:id", authorize, async (req, res) => {
+router.put("/purchaseItems/:id", async (req, res) => {
   const purchaseItemId = req.params.id;
   const {
     purchaseDate,
@@ -277,7 +231,7 @@ router.put("/purchaseItems/:id", authorize, async (req, res) => {
 });
 
 // Delete a purchase item by ID
-router.delete("/purchaseItems/:id", authorize, async (req, res) => {
+router.delete("/purchaseItems/:id", async (req, res) => {
   const purchaseItemId = req.params.id;
   try {
     const result = await pool.query(
@@ -297,7 +251,7 @@ router.delete("/purchaseItems/:id", authorize, async (req, res) => {
 
 // CRUD operations for purchaseProduct
 
-router.get("/purchaseProducts", authorize, async (req, res) => {
+router.get("/purchaseProducts", async (req, res) => {
   const purchaseProductId = req.params.id;
   try {
     const result = await pool.query("SELECT * FROM purchaseproduct", [
@@ -316,7 +270,7 @@ router.get("/purchaseProducts", authorize, async (req, res) => {
 
 // Read a purchase product by ID
 
-router.get("/purchaseProducts/:id", authorize, async (req, res) => {
+router.get("/purchaseProducts/:id", async (req, res) => {
   const purchaseProductId = req.params.id;
   try {
     const result = await pool.query(
@@ -336,7 +290,7 @@ router.get("/purchaseProducts/:id", authorize, async (req, res) => {
 
 // Update a purchase product by ID
 
-router.put("/purchaseProducts/:id", authorize, async (req, res) => {
+router.put("/purchaseProducts/:id", async (req, res) => {
   const purchaseProductId = req.params.id;
   const {
     purchaseDate,
@@ -376,7 +330,7 @@ router.put("/purchaseProducts/:id", authorize, async (req, res) => {
 
 // Delete a purchase product by ID
 
-router.delete("/purchaseProducts/:id", authorize, async (req, res) => {
+router.delete("/purchaseProducts/:id", async (req, res) => {
   const purchaseProductId = req.params.id;
   try {
     const result = await pool.query(
@@ -414,6 +368,34 @@ router.get("/vendor/:id", async (req, res) => {
     );
     if (result.rows.length === 0) {
       res.status(404).json({ error: "Vendor not found" });
+    } else {
+      res.json(result.rows[0]);
+    }
+  } catch (err) {
+    console.error("Error executing query", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+// Read all items
+router.get("/item", async (req, res) => {
+  try {
+    const result = await pool.query("SELECT * FROM item");
+    res.json(result.rows);
+  } catch (err) {
+    console.error("Error executing query", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// Read an item by ID
+router.get("/item/:id", async (req, res) => {
+  const itemId = req.params.id;
+  try {
+    const result = await pool.query("SELECT * FROM item WHERE item_id = $1", [
+      itemId,
+    ]);
+    if (result.rows.length === 0) {
+      res.status(404).json({ error: "Item not found" });
     } else {
       res.json(result.rows[0]);
     }

@@ -39,7 +39,7 @@ const Dashboard = ({ setAuth }) => {
                 <h1 className="card-title text-center">Welcome, {userName}</h1>
                 <button
                   onClick={handleLogout}
-                  className="btn btn-primary btn-block mt-5"
+                  className="btn btn-block mt-5 bg-gray-500 text-white"
                 >
                   Logout
                 </button>
