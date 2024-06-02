@@ -51,7 +51,7 @@ const Product = () => {
   return (
     <div>
       <div className="flex items-center justify-between m-4">
-        <h2 className="text-xl font-bold">Invoices</h2>
+        <h2 className="text-xl font-bold">Items Purchase List</h2>
         <Link
           to="/purchaseProduct"
           className="bg-gray-500 text-white px-4 py-2 rounded-md"

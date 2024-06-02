@@ -12,6 +12,8 @@ const pool = require("../db");
  *   post:
  *     summary: Create a new product
  *     description: Endpoint to create a new product
+ *     tags:
+ *       - products
  *     requestBody:
  *       required: true
  *       content:
@@ -65,6 +67,8 @@ router.post("/product", async (req, res) => {
  *   get:
  *     summary: Get all products
  *     description: Endpoint to retrieve all products
+ *     tags:
+ *       - products
  *     responses:
  *       '200':
  *         description: OK
@@ -106,6 +110,8 @@ router.get("/product", async (req, res) => {
  *   get:
  *     summary: Get a product by ID
  *     description: Endpoint to retrieve a product by its ID
+ *     tags:
+ *       - products
  *     parameters:
  *       - in: path
  *         name: id
@@ -160,6 +166,8 @@ router.get("/product/:id", async (req, res) => {
  *   get:
  *     summary: Get all purchase items
  *     description: Retrieve all purchase items from the database
+ *     tags:
+ *       - Purchase items
  *     responses:
  *       '200':
  *         description: A list of purchase items
@@ -193,6 +201,8 @@ router.get("/purchaseItems", async (req, res) => {
  *   get:
  *     summary: Get a purchase item by ID
  *     description: Retrieve a purchase item by its ID
+ *     tags:
+ *       - Purchase items
  *     parameters:
  *       - in: path
  *         name: id
@@ -236,6 +246,8 @@ router.get("/purchaseItems/:id", async (req, res) => {
  *   post:
  *     summary: Create a new purchase item
  *     description: Add a new purchase item to the database
+ *     tags:
+ *       - Purchase items
  *     requestBody:
  *       required: true
  *       content:
@@ -292,6 +304,8 @@ router.post("/purchaseItems", async (req, res) => {
  *   put:
  *     summary: Update a purchase item by ID
  *     description: Update a purchase item in the database by its ID
+ *     tags:
+ *       - Purchase items
  *     parameters:
  *       - in: path
  *         name: id
@@ -362,6 +376,8 @@ router.put("/purchaseItems/:id", async (req, res) => {
  *   delete:
  *     summary: Delete a purchase item by ID
  *     description: Delete a purchase item from the database by its ID
+ *     tags:
+ *       - Purchase items
  *     parameters:
  *       - in: path
  *         name: id
@@ -400,7 +416,49 @@ router.delete("/purchaseItems/:id", async (req, res) => {
 });
 
 // CRUD operations for purchaseProduct
-
+/**
+ * @swagger
+ * /inventory/purchaseProducts:
+ *   get:
+ *     summary: Get all purchase products
+ *     description: Retrieve a list of all purchase products
+ *     tags:
+ *       - Purchase Products
+ *     responses:
+ *       200:
+ *         description: List of purchase products
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   purchase_id:
+ *                     type: integer
+ *                   purchaseDate:
+ *                     type: string
+ *                     format: date
+ *                   purchaseValidDate:
+ *                     type: string
+ *                     format: date
+ *                   product_id:
+ *                     type: integer
+ *                   product_name:
+ *                     type: string
+ *                   quantity:
+ *                     type: integer
+ *                   price:
+ *                     type: number
+ *                   vendor_id:
+ *                     type: integer
+ *                   vendor_name:
+ *                     type: string
+ *       404:
+ *         description: Purchase item not found
+ *       500:
+ *         description: Internal server error
+ */
 router.get("/purchaseProducts", async (req, res) => {
   try {
     const result = await pool.query("SELECT * FROM purchaseproduct");
@@ -416,7 +474,54 @@ router.get("/purchaseProducts", async (req, res) => {
 });
 
 // Read a purchase product by ID
-
+/**
+ * @swagger
+ * /inventory/purchaseProducts/{id}:
+ *   get:
+ *     summary: Get a purchase product by ID
+ *     description: Retrieve a purchase product by its ID
+ *     tags:
+ *       - Purchase Products
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: ID of the purchase product to get
+ *     responses:
+ *       200:
+ *         description: A purchase product
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 purchase_id:
+ *                   type: integer
+ *                 purchaseDate:
+ *                   type: string
+ *                   format: date
+ *                 purchaseValidDate:
+ *                   type: string
+ *                   format: date
+ *                 product_id:
+ *                   type: integer
+ *                 product_name:
+ *                   type: string
+ *                 quantity:
+ *                   type: integer
+ *                 price:
+ *                   type: number
+ *                 vendor_id:
+ *                   type: integer
+ *                 vendor_name:
+ *                   type: string
+ *       404:
+ *         description: Purchase product not found
+ *       500:
+ *         description: Internal server error
+ */
 router.get("/purchaseProducts/:id", async (req, res) => {
   const purchaseProductId = req.params.id;
   try {
@@ -436,7 +541,80 @@ router.get("/purchaseProducts/:id", async (req, res) => {
 });
 
 // Update a purchase product by ID
-
+/**
+ * @swagger
+ * /inventory/purchaseProducts/{id}:
+ *   put:
+ *     summary: Update a purchase product by ID
+ *     description: Update a purchase product by its ID
+ *     tags:
+ *       - Purchase Products
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: ID of the purchase product to update
+ *     requestBody:
+ *       description: Purchase product data to update
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               purchaseDate:
+ *                 type: string
+ *                 format: date
+ *               purchaseValidDate:
+ *                 type: string
+ *                 format: date
+ *               product_id:
+ *                 type: integer
+ *               product_name:
+ *                 type: string
+ *               quantity:
+ *                 type: integer
+ *               price:
+ *                 type: number
+ *               vendor_id:
+ *                 type: integer
+ *               vendor_name:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Updated purchase product
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 purchase_id:
+ *                   type: integer
+ *                 purchaseDate:
+ *                   type: string
+ *                   format: date
+ *                 purchaseValidDate:
+ *                   type: string
+ *                   format: date
+ *                 product_id:
+ *                   type: integer
+ *                 product_name:
+ *                   type: string
+ *                 quantity:
+ *                   type: integer
+ *                 price:
+ *                   type: number
+ *                 vendor_id:
+ *                   type: integer
+ *                 vendor_name:
+ *                   type: string
+ *       404:
+ *         description: Purchase product not found
+ *       500:
+ *         description: Internal server error
+ */
 router.put("/purchaseProducts/:id", async (req, res) => {
   const purchaseProductId = req.params.id;
   const {
@@ -476,7 +654,36 @@ router.put("/purchaseProducts/:id", async (req, res) => {
 });
 
 // Delete a purchase product by ID
-
+/**
+ * @swagger
+ * /inventory/purchaseProducts/{id}:
+ *   delete:
+ *     summary: Delete a purchase product by ID
+ *     description: Delete a purchase product by its ID
+ *     tags:
+ *       - Purchase Products
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: ID of the purchase product to delete
+ *     responses:
+ *       200:
+ *         description: Purchase product deleted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *       404:
+ *         description: Purchase product not found
+ *       500:
+ *         description: Internal server error
+ */
 router.delete("/purchaseProducts/:id", async (req, res) => {
   const purchaseProductId = req.params.id;
   try {
@@ -496,6 +703,71 @@ router.delete("/purchaseProducts/:id", async (req, res) => {
 });
 
 // Create a new purchase product
+/**
+ * @swagger
+ * /inventory/purchaseProducts:
+ *   post:
+ *     summary: Create a new purchase product
+ *     description: Create a new purchase product
+ *     tags:
+ *       - Purchase Products
+ *     requestBody:
+ *       description: Purchase product data to create
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               purchaseDate:
+ *                 type: string
+ *                 format: date
+ *               purchaseValidDate:
+ *                 type: string
+ *                 format: date
+ *               product_id:
+ *                 type: integer
+ *               product_name:
+ *                 type: string
+ *               quantity:
+ *                 type: integer
+ *               price:
+ *                 type: number
+ *               vendor_id:
+ *                 type: integer
+ *               vendor_name:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Created purchase product
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 purchase_id:
+ *                   type: integer
+ *                 purchaseDate:
+ *                   type: string
+ *                   format: date
+ *                 purchaseValidDate:
+ *                   type: string
+ *                   format: date
+ *                 product_id:
+ *                   type: integer
+ *                 product_name:
+ *                   type: string
+ *                 quantity:
+ *                   type: integer
+ *                 price:
+ *                   type: number
+ *                 vendor_id:
+ *                   type: integer
+ *                 vendor_name:
+ *                   type: string
+ *       500:
+ *         description: Internal server error
+ */
 router.post("/purchaseProducts", async (req, res) => {
   const {
     purchaseDate,
@@ -529,6 +801,33 @@ router.post("/purchaseProducts", async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /inventory/vendor:
+ *   get:
+ *     summary: Get all vendors
+ *     description: Retrieve a list of all vendors
+ *     tags:
+ *       - Vendors
+ *     responses:
+ *       200:
+ *         description: List of vendors
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   vendor_id:
+ *                     type: integer
+ *                   vendor_name:
+ *                     type: string
+ *                   vendor_address:
+ *                     type: string
+ *       500:
+ *         description: Internal server error
+ */
 router.get("/vendor", async (req, res) => {
   try {
     const result = await pool.query("SELECT * FROM vendor");
@@ -540,6 +839,40 @@ router.get("/vendor", async (req, res) => {
 });
 
 // Read a vendor by ID
+/**
+ * @swagger
+ * /inventory/vendor/{id}:
+ *   get:
+ *     summary: Get a vendor by ID
+ *     description: Retrieve a vendor by its ID
+ *     tags:
+ *       - Vendors
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: ID of the vendor to get
+ *     responses:
+ *       200:
+ *         description: A vendor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 vendor_id:
+ *                   type: integer
+ *                 vendor_name:
+ *                   type: string
+ *                 vendor_address:
+ *                   type: string
+ *       404:
+ *         description: Vendor not found
+ *       500:
+ *         description: Internal server error
+ */
 router.get("/vendor/:id", async (req, res) => {
   const vendorId = req.params.id;
   try {
@@ -558,6 +891,35 @@ router.get("/vendor/:id", async (req, res) => {
   }
 });
 // Read all items
+/**
+ * @swagger
+ * /inventory/item:
+ *   get:
+ *     summary: Get all items
+ *     description: Retrieve a list of all items
+ *     tags:
+ *       - Items
+ *     responses:
+ *       200:
+ *         description: List of items
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   item_id:
+ *                     type: integer
+ *                   item_name:
+ *                     type: string
+ *                   item_description:
+ *                     type: string
+ *                   price:
+ *                     type: number
+ *       500:
+ *         description: Internal server error
+ */
 router.get("/item", async (req, res) => {
   try {
     const result = await pool.query("SELECT * FROM item");
@@ -569,6 +931,42 @@ router.get("/item", async (req, res) => {
 });
 
 // Read an item by ID
+/**
+ * @swagger
+ * /inventory/item/{id}:
+ *   get:
+ *     summary: Get an item by ID
+ *     description: Retrieve an item by its ID
+ *     tags:
+ *       - Items
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: ID of the item to get
+ *     responses:
+ *       200:
+ *         description: An item
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 item_id:
+ *                   type: integer
+ *                 item_name:
+ *                   type: string
+ *                 item_description:
+ *                   type: string
+ *                 price:
+ *                   type: number
+ *       404:
+ *         description: Item not found
+ *       500:
+ *         description: Internal server error
+ */
 router.get("/item/:id", async (req, res) => {
   const itemId = req.params.id;
   try {

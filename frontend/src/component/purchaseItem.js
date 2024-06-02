@@ -104,8 +104,6 @@ const PurchaseItem = () => {
         vendor_name,
       };
 
-      console.log("Submitting purchase data:", purchaseData); // Debug log
-
       try {
         const response = await axios.post(
           "http://localhost:5000/inventory/purchaseItems",
