@@ -5,23 +5,28 @@ import { Label } from "../components/ui/label";
 import { Card } from "../components/ui/card";
 import CreatableSelect from "react-select/creatable";
 import axios from "axios";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const PurchaseProduct = () => {
   const [items, setItems] = useState([
-    { item: "", quantity: 0, unitPrice: 0, linePrice: 0 },
+    {
+      product_id: "",
+      product_name: "",
+      quantity: 0,
+      unitPrice: 0,
+      linePrice: 0,
+    },
   ]);
   const [purchaseDate, setPurchaseDate] = useState("");
   const [purchaseValidDate, setPurchaseValidDate] = useState("");
   const [vendorOptions, setVendorOptions] = useState([]);
-  const [prodOptions, setprodOptions] = useState([]);
+  const [prodOptions, setProdOptions] = useState([]);
   const [vendor, setVendor] = useState(null);
   const [note, setNote] = useState("");
   const [totalQuantity, setTotalQuantity] = useState(0);
   const [totalPrice, setTotalPrice] = useState(0);
-
+  const navigate = useNavigate();
   useEffect(() => {
-    // Fetch vendors from the backend
     axios
       .get("http://localhost:5000/inventory/vendor")
       .then((response) => {
@@ -35,7 +40,6 @@ const PurchaseProduct = () => {
         console.error("There was an error fetching the vendor data!", error);
       });
 
-    // Fetch items from the backend
     axios
       .get("http://localhost:5000/inventory/product")
       .then((response) => {
@@ -43,7 +47,7 @@ const PurchaseProduct = () => {
           value: prod.product_id,
           label: prod.product_name,
         }));
-        setprodOptions(options);
+        setProdOptions(options);
       })
       .catch((error) => {
         console.error("There was an error fetching the item data!", error);
@@ -51,7 +55,16 @@ const PurchaseProduct = () => {
   }, []);
 
   const handleAddItem = () => {
-    setItems([...items, { item: "", quantity: 0, unitPrice: 0, linePrice: 0 }]);
+    setItems([
+      ...items,
+      {
+        product_id: "",
+        product_name: "",
+        quantity: 0,
+        unitPrice: 0,
+        linePrice: 0,
+      },
+    ]);
   };
 
   const handleItemChange = (index, field, value) => {
@@ -60,6 +73,15 @@ const PurchaseProduct = () => {
         const newItem = { ...item, [field]: value };
         if (field === "quantity" || field === "unitPrice") {
           newItem.linePrice = newItem.quantity * newItem.unitPrice;
+        }
+        if (field === "item") {
+          newItem.product_id = value;
+          const selectedProduct = prodOptions.find(
+            (option) => option.value === value
+          );
+          if (selectedProduct) {
+            newItem.product_name = selectedProduct.label;
+          }
         }
         return newItem;
       }
@@ -80,6 +102,40 @@ const PurchaseProduct = () => {
     );
     setTotalQuantity(totalQuantity);
     setTotalPrice(totalPrice);
+  };
+
+  const handleSubmit = async () => {
+    const vendor_id = vendor ? vendor.value : null;
+    const vendor_name = vendor ? vendor.label : null;
+
+    for (const item of items) {
+      const purchaseData = {
+        purchaseDate,
+        purchaseValidDate,
+        product_id: item.product_id,
+        product_name: item.product_name,
+        quantity: item.quantity,
+        price: item.unitPrice,
+        vendor_id,
+        vendor_name,
+      };
+
+      console.log("Submitting purchase data:", purchaseData); // Debug log
+
+      try {
+        const response = await axios.post(
+          "http://localhost:5000/inventory/purchaseProducts",
+          purchaseData
+        );
+        console.log("Purchase data submitted successfully:", response.data);
+      } catch (error) {
+        console.error(
+          "There was an error submitting the purchase data!",
+          error
+        );
+      }
+    }
+    navigate("/inventory");
   };
 
   return (
@@ -172,7 +228,12 @@ const PurchaseProduct = () => {
         >
           Back
         </Link>
-        <Button className="bg-gray-600 text-white py-2 px-4">Submit</Button>
+        <Button
+          onClick={handleSubmit}
+          className="bg-gray-600 text-white py-2 px-4"
+        >
+          Submit
+        </Button>
       </div>
     </Card>
   );

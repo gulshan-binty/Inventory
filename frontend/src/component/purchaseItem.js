@@ -5,7 +5,7 @@ import { Label } from "../components/ui/label";
 import { Card } from "../components/ui/card";
 import CreatableSelect from "react-select/creatable";
 import axios from "axios";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const PurchaseItem = () => {
   const [items, setItems] = useState([
@@ -19,6 +19,8 @@ const PurchaseItem = () => {
   const [note, setNote] = useState("");
   const [totalQuantity, setTotalQuantity] = useState(0);
   const [totalPrice, setTotalPrice] = useState(0);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Fetch vendors from the backend
@@ -34,6 +36,7 @@ const PurchaseItem = () => {
       .catch((error) => {
         console.error("There was an error fetching the vendor data!", error);
       });
+
     // Fetch items from the backend
     axios
       .get("http://localhost:5000/inventory/item")
@@ -79,6 +82,47 @@ const PurchaseItem = () => {
     );
     setTotalQuantity(totalQuantity);
     setTotalPrice(totalPrice);
+  };
+
+  const handleSubmit = async () => {
+    const vendor_id = vendor ? vendor.value : null;
+    const vendor_name = vendor ? vendor.label : null;
+
+    for (const item of items) {
+      const selectedItem = itemOptions.find(
+        (option) => option.value === item.item
+      );
+
+      const purchaseData = {
+        purchaseDate,
+        purchaseValidDate,
+        item_id: item.item,
+        item_name: selectedItem ? selectedItem.label : "",
+        quantity: item.quantity,
+        price: item.unitPrice,
+        vendor_id,
+        vendor_name,
+      };
+
+      console.log("Submitting purchase data:", purchaseData); // Debug log
+
+      try {
+        const response = await axios.post(
+          "http://localhost:5000/inventory/purchaseItems",
+          purchaseData
+        );
+        console.log("Purchase data submitted successfully:", response.data);
+      } catch (error) {
+        console.error(
+          "There was an error submitting the purchase data!",
+          error
+        );
+        return;
+      }
+    }
+
+    // Navigate to the inventory tab after successful submission
+    navigate("/inventory");
   };
 
   return (
@@ -171,7 +215,12 @@ const PurchaseItem = () => {
         >
           Back
         </Link>
-        <Button className="bg-gray-600 text-white py-2 px-4">Submit</Button>
+        <Button
+          className="bg-gray-600 text-white py-2 px-4"
+          onClick={handleSubmit}
+        >
+          Submit
+        </Button>
       </div>
     </Card>
   );

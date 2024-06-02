@@ -1,4 +1,6 @@
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import axios from "axios";
 import {
   Table,
   TableBody,
@@ -8,41 +10,50 @@ import {
   TableHeader,
   TableRow,
 } from "../components/ui/table";
+import { Trash2 } from "lucide-react";
 
-const invoices = [
-  {
-    invoice: "INV001",
-    paymentStatus: "Paid",
-    totalAmount: "$250.00",
-    paymentMethod: "Credit Card",
-  },
-  {
-    invoice: "INV002",
-    paymentStatus: "Pending",
-    totalAmount: "$150.00",
-    paymentMethod: "PayPal",
-  },
-  {
-    invoice: "INV003",
-    paymentStatus: "Unpaid",
-    totalAmount: "$350.00",
-    paymentMethod: "Bank Transfer",
-  },
-  {
-    invoice: "INV004",
-    paymentStatus: "Paid",
-    totalAmount: "$450.00",
-    paymentMethod: "Credit Card",
-  },
-];
+const formatDate = (dateString) => {
+  const date = new Date(dateString);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+};
 
-const Item = () => {
+const Product = () => {
+  const [invoices, setInvoices] = useState([]);
+
+  useEffect(() => {
+    // Fetch purchase items from the backend
+    axios
+      .get("http://localhost:5000/inventory/purchaseItems")
+      .then((response) => {
+        setInvoices(response.data);
+        console.log(response.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching purchase items:", error);
+      });
+  }, []);
+  const handleDelete = (id) => {
+    // Send delete request to the backend
+    axios
+      .delete(`http://localhost:5000/inventory/purchaseItems/${id}`)
+      .then((response) => {
+        console.log("Item deleted successfully");
+        // Update state to remove the deleted item
+        setInvoices(invoices.filter((invoice) => invoice.purchase_id !== id));
+      })
+      .catch((error) => {
+        console.error("Error deleting item:", error);
+      });
+  };
   return (
     <div>
       <div className="flex items-center justify-between m-4">
         <h2 className="text-xl font-bold">Invoices</h2>
         <Link
-          to="/purchaseItem"
+          to="/purchaseProduct"
           className="bg-gray-500 text-white px-4 py-2 rounded-md"
         >
           Add
@@ -51,32 +62,38 @@ const Item = () => {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className="w-[100px]">Invoice</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>Method</TableHead>
-            <TableHead className="text-right">Amount</TableHead>
+            <TableHead className="w-[100px]">sl</TableHead>
+            <TableHead>Purchase Date</TableHead>
+            <TableHead>Purchase Valid Date</TableHead>
+            <TableHead>Item Name</TableHead>
+            <TableHead>Quantity</TableHead>
+            <TableHead>Price</TableHead>
+            <TableHead>Vendor Name</TableHead>
+            <TableHead>Actions</TableHead>
           </TableRow>
         </TableHeader>
-        <TableBody>
+        <TableBody className="text-gray-500">
           {invoices.map((invoice) => (
-            <TableRow key={invoice.invoice}>
-              <TableCell className="font-medium">{invoice.invoice}</TableCell>
-              <TableCell>{invoice.paymentStatus}</TableCell>
-              <TableCell>{invoice.paymentMethod}</TableCell>
-              <TableCell className="text-right">
-                {invoice.totalAmount}
+            <TableRow key={invoice.purchase_id}>
+              <TableCell>{}</TableCell>
+              <TableCell>{formatDate(invoice.purchasedate)}</TableCell>
+              <TableCell>{formatDate(invoice.purchasevaliddate)}</TableCell>
+              <TableCell>{invoice.item_name}</TableCell>
+              <TableCell>{invoice.quantity}</TableCell>
+              <TableCell>{invoice.price}</TableCell>
+              <TableCell>{invoice.vendor_name}</TableCell>
+              <TableCell>
+                <button onClick={() => handleDelete(invoice.purchase_id)}>
+                  <Trash2 className="text-gray-500 h-4 w-4" />
+                </button>
               </TableCell>
             </TableRow>
           ))}
         </TableBody>
-        <TableFooter>
-          <TableRow>
-            <TableCell colSpan={3}>Total</TableCell>
-            <TableCell className="text-right">$2,500.00</TableCell>
-          </TableRow>
-        </TableFooter>
+        <TableFooter></TableFooter>
       </Table>
     </div>
   );
 };
-export default Item;
+
+export default Product;
